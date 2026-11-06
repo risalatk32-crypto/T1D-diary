@@ -1,0 +1,6 @@
+{
+  "name": "Sugar Diary",
+  "description": "दैनिक ब्लड शुगर एवं आहार डायरी (Daily Blood Sugar & Diet Diary) for Type 1 Diabetes with secure, immutable records and doctor sharing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

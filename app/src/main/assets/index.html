@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>दैनिक ब्लड शुगर एवं आहार डायरी | Daily Blood Sugar & Diet Diary</title>
+  <style>
+    :root {
+      --primary: #0288D1;
+      --primary-dark: #01579B;
+      --primary-light: #E1F5FE;
+      --bg-main: #F4F7F9;
+      --card-bg: #FFFFFF;
+      --text-main: #1A202C;
+      --text-muted: #5A6A80;
+      --border-color: #DDE3EA;
+      
+      /* Distinct Soft Section Colors */
+      --bf-bg: #FFF9E6;
+      --bf-border: #FFE082;
+      --bf-accent: #E65100;
+      --bf-badge: #FFF3E0;
+      
+      --lunch-bg: #EBF8EE;
+      --lunch-border: #A5D6A7;
+      --lunch-accent: #1B5E20;
+      --lunch-badge: #E8F5E9;
+      
+      --dinner-bg: #F1EFFE;
+      --dinner-border: #C5CAE9;
+      --dinner-accent: #303F9F;
+      --dinner-badge: #EDE7F6;
+
+      --danger: #D32F2F;
+      --warning: #F57C00;
+      --success: #2E7D32;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 2px 6px rgba(0,0,0,0.05);
+      --shadow-md: 0 6px 18px rgba(0,0,0,0.08);
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Devanagari", Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Header Bar */
+    header {
+      background: linear-gradient(135deg, #01579B 0%, #0288D1 70%, #0097A7 100%);
+      color: #FFFFFF;
+      padding: 24px 20px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      right: -20px;
+      bottom: -30px;
+      width: 140px;
+      height: 140px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .app-icon {
+      width: 44px;
+      height: 44px;
+      background: #FFFFFF;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+
+    .header-titles h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      line-height: 1.25;
+    }
+
+    .header-titles p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+
+    .header-tagline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(4px);
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+
+    .badge-secure {
+      background: rgba(255, 235, 59, 0.25);
+      border: 1px solid rgba(255, 235, 59, 0.4);
+      color: #FFFDE7;
+    }
+
+    /* Policy Alert */
+    .immutable-notice {
+      background: #FFF8E1;
+      border-left: 4px solid #FFA000;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: #6D4C41;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .immutable-notice svg {
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Quick Stats Bar */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+
+    .stat-card .num {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      display: block;
+      line-height: 1.1;
+    }
+
+    .stat-card .lbl {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: block;
+      font-weight: 500;
+    }
+
+    /* Log Form Card */
+    .form-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 28px;
+      border: 1px solid var(--border-color);
+    }
+
+    .section-headline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #EEF2F6;
+    }
+
+    .section-headline h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1E293B;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Date Picker Row */
+    .date-row {
+      background: #F8FAFC;
+      border: 1px solid var(--border-color);
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .date-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .date-left label {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #334155;
+      white-space: nowrap;
+    }
+
+    .date-input {
+      font-size: 0.95rem;
+      font-family: inherit;
+      padding: 8px 12px;
+      border: 1.5px solid #CBD5E1;
+      border-radius: var(--radius-sm);
+      background: #FFFFFF;
+      color: #1E293B;
+      font-weight: 600;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .date-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.15);
+    }
+
+    .date-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-today {
+      background: #E2E8F0;
+      border: none;
+      color: #334155;
+      padding: 7px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-today:hover {
+      background: #CBD5E1;
+    }
+
+    /* MEAL LOGGING SECTIONS */
+    .meal-block {
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 20px;
+      border: 1.5px solid;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .meal-block:hover {
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Breakfast */
+    .block-breakfast {
+      background-color: var(--bf-bg);
+      border-color: var(--bf-border);
+    }
+    .block-breakfast .meal-header {
+      color: var(--bf-accent);
+    }
+
+    /* Lunch */
+    .block-lunch {
+      background-color: var(--lunch-bg);
+      border-color: var(--lunch-border);
+    }
+    .block-lunch .meal-header {
+      color: var(--lunch-accent);
+    }
+
+    /* Dinner */
+    .block-dinner {
+      background-color: var(--dinner-bg);
+      border-color: var(--dinner-border);
+    }
+    .block-dinner .meal-header {
+      color: var(--dinner-accent);
+    }
+
+    .meal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed rgba(0,0,0,0.12);
+    }
+
+    .meal-title {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .meal-time-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 20px;
+      color: inherit;
+    }
+
+    /* Form Grids */
+    .input-grid-5 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .input-grid-6 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 12px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field-group.full-span {
+      grid-column: 1 / -1;
+    }
+
+    .field-group label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .field-unit {
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: #64748B;
+    }
+
+    .field-input, .field-select, .field-textarea {
+      width: 100%;
+      padding: 9px 11px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: #0F172A;
+      background: #FFFFFF;
+      border: 1.5px solid #CBD5E1;
+      border-radius: var(--radius-sm);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .field-input:focus, .field-select:focus, .field-textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.15);
+      background: #FFFFFF;
+    }
+
+    .field-input::placeholder, .field-textarea::placeholder {
+      color: #94A3B8;
+      font-size: 0.8rem;
+    }
+
+    /* Form Action Buttons */
+    .form-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .btn-save-entry {
+      background: linear-gradient(135deg, #0288D1 0%, #01579B 100%);
+      color: #FFFFFF;
+      border: none;
+      padding: 15px 24px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(2, 136, 209, 0.35);
+      transition: all 0.2s;
+    }
+
+    .btn-save-entry:hover {
+      background: linear-gradient(135deg, #039BE5 0%, #0277BD 100%);
+      box-shadow: 0 6px 18px rgba(2, 136, 209, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .btn-save-entry:active {
+      transform: translateY(1px);
+    }
+
+    /* Share & Export Hub */
+    .share-hub {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 28px;
+      border: 1px solid var(--border-color);
+    }
+
+    .hub-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .hub-header h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1E293B;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .share-buttons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 16px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-whatsapp {
+      background: #25D366;
+      color: #FFFFFF;
+      box-shadow: 0 3px 10px rgba(37, 211, 102, 0.3);
+    }
+    .btn-whatsapp:hover {
+      background: #20BA5A;
+    }
+
+    .btn-copy {
+      background: #3B82F6;
+      color: #FFFFFF;
+    }
+    .btn-copy:hover {
+      background: #2563EB;
+    }
+
+    .btn-download {
+      background: #475569;
+      color: #FFFFFF;
+    }
+    .btn-download:hover {
+      background: #334155;
+    }
+
+    .btn-print {
+      background: #0D9488;
+      color: #FFFFFF;
+    }
+    .btn-print:hover {
+      background: #0F766E;
+    }
+
+    /* History Table Section */
+    .history-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    .history-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .history-top h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1E293B;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-input {
+      padding: 7px 12px;
+      font-size: 0.82rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      outline: none;
+    }
+
+    /* Responsive Table Wrap */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background: #FFFFFF;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      min-width: 950px;
+      text-align: left;
+    }
+
+    thead {
+      background: #0F172A;
+      color: #FFFFFF;
+    }
+
+    thead th {
+      padding: 10px 12px;
+      font-weight: 600;
+      font-size: 0.78rem;
+      white-space: nowrap;
+      border-right: 1px solid #1E293B;
+      text-align: center;
+    }
+
+    thead tr.super-header th {
+      background: #1E293B;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #334155;
+    }
+
+    th.col-bf {
+      background: #D97706 !important;
+      color: #FFFFFF !important;
+    }
+    th.col-lunch {
+      background: #15803D !important;
+      color: #FFFFFF !important;
+    }
+    th.col-dinner {
+      background: #4338CA !important;
+      color: #FFFFFF !important;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #E2E8F0;
+      transition: background 0.15s;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #F8FAFC;
+    }
+
+    tbody tr:hover {
+      background-color: #F1F5F9;
+    }
+
+    tbody td {
+      padding: 10px 10px;
+      color: #1E293B;
+      vertical-align: middle;
+      border-right: 1px solid #E2E8F0;
+      font-size: 0.8rem;
+    }
+
+    .td-center {
+      text-align: center;
+    }
+
+    /* Glucose Status Colors */
+    .sugar-pill {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.78rem;
+    }
+    .sugar-normal {
+      background: #E8F5E9;
+      color: #2E7D32;
+    }
+    .sugar-high {
+      background: #FFEBEE;
+      color: #C62828;
+    }
+    .sugar-low {
+      background: #FFF3E0;
+      color: #E65100;
+    }
+
+    .insulin-tag {
+      font-weight: 700;
+      color: #0288D1;
+    }
+
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: #64748B;
+    }
+
+    .empty-state svg {
+      margin-bottom: 12px;
+      opacity: 0.6;
+    }
+
+    /* Mobile Cards View for smaller screens if scrolled or toggled */
+    .history-card-item {
+      display: none;
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Toast Notification */
+    #toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #1E293B;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 12px 18px;
+      position: fixed;
+      z-index: 9999;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: opacity 0.3s, bottom 0.3s;
+    }
+
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 40px;
+    }
+
+    /* Modal for Summary / HTML code */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      max-width: 650px;
+      width: 100%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      background: #F8FAFC;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h4 {
+      font-size: 1.05rem;
+      color: #1E293B;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      color: #64748B;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      font-size: 0.88rem;
+    }
+
+    .modal-body pre {
+      background: #0F172A;
+      color: #E2E8F0;
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      font-family: monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    .modal-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #F8FAFC;
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: #FFFFFF;
+        color: #000000;
+        padding-bottom: 0;
+      }
+      header, .form-card, .share-hub, .immutable-notice, .stats-strip, .filter-group {
+        display: none !important;
+      }
+      .history-card {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+      .table-container {
+        border: 1px solid #000 !important;
+      }
+      table {
+        min-width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Top Header -->
+    <header>
+      <div class="header-top">
+        <div class="app-icon">🩸</div>
+        <div class="header-titles">
+          <h1>दैनिक ब्लड शुगर एवं आहार डायरी</h1>
+          <p>Daily Blood Sugar & Diet Diary • Type 1 Diabetes Log</p>
+        </div>
+      </div>
+      <div class="header-tagline">
+        <span class="badge-pill">Type 1 Diabetes Care</span>
+        <span class="badge-pill badge-secure">🔒 अपरिवर्तनीय सुरक्षित रिकॉर्ड (Permanent Log)</span>
+        <span class="badge-pill">डॉक्टर रिपोर्ट शेयरिंग</span>
+      </div>
+    </header>
+
+    <!-- Strict Restriction Notice -->
+    <div class="immutable-notice">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        <path d="M9 12l2 2 4-4"></path>
+      </svg>
+      <div>
+        <strong>चिकित्सा रिकॉर्ड सुरक्षा नियम (STRICT POLICY):</strong>
+        एक बार प्रविष्टि सहेजे जाने के बाद रिकॉर्ड में कोई बदलाव (Edit) या हटाना (Delete) संभव नहीं है। यह नियम आपकी सुरक्षा एवं डॉक्टर के लिए सटीक, निष्पक्ष इतिहास बनाए रखने हेतु निर्धारित है।
+      </div>
+    </div>
+
+    <!-- Quick Stats Bar -->
+    <div class="stats-strip">
+      <div class="stat-card">
+        <span class="num" id="statTotalDays">0</span>
+        <span class="lbl">कुल लॉग दिन (Total Days)</span>
+      </div>
+      <div class="stat-card">
+        <span class="num" id="statAvgFasting">-</span>
+        <span class="lbl">औसत फास्टिंग शुगर (mg/dL)</span>
+      </div>
+      <div class="stat-card">
+        <span class="num" id="statAvgPostMeal">-</span>
+        <span class="lbl">औसत 2H पोस्ट-मील (mg/dL)</span>
+      </div>
+      <div class="stat-card">
+        <span class="num" id="statTotalInsulin">-</span>
+        <span class="lbl">अंतिम कुल इंसुलिन (Units)</span>
+      </div>
+    </div>
+
+    <!-- MAIN LOGGING FORM -->
+    <div class="form-card">
+      <div class="section-headline">
+        <h2>
+          <span>📝</span>
+          <span>नई दैनिक प्रविष्टि दर्ज करें (Log New Entry)</span>
+        </h2>
+      </div>
+
+      <form id="diabetesForm">
+        
+        <!-- Date Selector -->
+        <div class="date-row">
+          <div class="date-left">
+            <label for="logDate">📅 तारीख (Date):</label>
+            <input type="date" id="logDate" class="date-input" required>
+          </div>
+          <div class="date-actions">
+            <button type="button" class="btn-today" id="btnSetToday">आज की तारीख (Today)</button>
+          </div>
+        </div>
+
+        <!-- 1. BREAKFAST / FASTING SECTION (Soft Amber/Orange) -->
+        <div class="meal-block block-breakfast">
+          <div class="meal-header">
+            <div class="meal-title">
+              <span>🌅</span>
+              <span>1. नाश्ता / खाली पेट (Breakfast & Fasting)</span>
+            </div>
+            <span class="meal-time-tag">सुबह का समय</span>
+          </div>
+
+          <div class="input-grid-5">
+            <!-- Fasting Sugar -->
+            <div class="field-group">
+              <label for="bfSugar">
+                <span>खाली पेट शुगर (Fasting)</span>
+                <span class="field-unit">mg/dL</span>
+              </label>
+              <input type="number" id="bfSugar" class="field-input" placeholder="उदा. 95" min="20" max="600" step="1">
+            </div>
+
+            <!-- Novorapid -->
+            <div class="field-group">
+              <label for="bfInsulin">
+                <span>नोवोरेपिड इंसुलिन</span>
+                <span class="field-unit">Units</span>
+              </label>
+              <input type="number" id="bfInsulin" class="field-input" placeholder="उदा. 4" min="0" max="60" step="0.5">
+            </div>
+
+            <!-- Nashta Description -->
+            <div class="field-group">
+              <label for="bfNashta">
+                <span>नाश्ता (Nashta)</span>
+                <span class="field-unit">आहार विवरण</span>
+              </label>
+              <input type="text" id="bfNashta" class="field-input" placeholder="उदा. 2 बेसन चीला, चाय (बिना चीनी)">
+            </div>
+
+            <!-- 2H Sugar -->
+            <div class="field-group">
+              <label for="bf2hSugar">
+                <span>2H शुगर (2 घंटे बाद)</span>
+                <span class="field-unit">mg/dL</span>
+              </label>
+              <input type="number" id="bf2hSugar" class="field-input" placeholder="उदा. 140" min="20" max="600" step="1">
+            </div>
+
+            <!-- 11 AM Note -->
+            <div class="field-group">
+              <label for="bf11Am">
+                <span>11 AM (स्नैक / नोट)</span>
+                <span class="field-unit">11:00 बजे</span>
+              </label>
+              <input type="text" id="bf11Am" class="field-input" placeholder="उदा. 10 बादाम, खीरा या रीडिंग">
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. LUNCH SECTION (Soft Mint/Sage Green) -->
+        <div class="meal-block block-lunch">
+          <div class="meal-header">
+            <div class="meal-title">
+              <span>☀️</span>
+              <span>2. दोपहर का भोजन (Lunch)</span>
+            </div>
+            <span class="meal-time-tag">दोपहर का समय</span>
+          </div>
+
+          <div class="input-grid-5">
+            <!-- Lunch Sugar -->
+            <div class="field-group">
+              <label for="lunchSugar">
+                <span>लंच पूर्व शुगर (Pre)</span>
+                <span class="field-unit">mg/dL</span>
+              </label>
+              <input type="number" id="lunchSugar" class="field-input" placeholder="उदा. 110" min="20" max="600" step="1">
+            </div>
+
+            <!-- Novorapid -->
+            <div class="field-group">
+              <label for="lunchInsulin">
+                <span>नोवोरेपिड इंसुलिन</span>
+                <span class="field-unit">Units</span>
+              </label>
+              <input type="number" id="lunchInsulin" class="field-input" placeholder="उदा. 6" min="0" max="60" step="0.5">
+            </div>
+
+            <!-- Lunch Description -->
+            <div class="field-group">
+              <label for="lunchMeal">
+                <span>लंच (Lunch)</span>
+                <span class="field-unit">आहार विवरण</span>
+              </label>
+              <input type="text" id="lunchMeal" class="field-input" placeholder="उदा. 2 रोटी, दाल, हरी सब्जी, सलाद">
+            </div>
+
+            <!-- 2H Sugar -->
+            <div class="field-group">
+              <label for="lunch2hSugar">
+                <span>2H शुगर (2 घंटे बाद)</span>
+                <span class="field-unit">mg/dL</span>
+              </label>
+              <input type="number" id="lunch2hSugar" class="field-input" placeholder="उदा. 155" min="20" max="600" step="1">
+            </div>
+
+            <!-- 5 PM / Note -->
+            <div class="field-group">
+              <label for="lunch5pm">
+                <span>5 PM / Note (शाम)</span>
+                <span class="field-unit">स्नैक / नोट</span>
+              </label>
+              <input type="text" id="lunch5pm" class="field-input" placeholder="उदा. रोस्टेड मखाना, ग्रीन टी">
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. DINNER SECTION (Soft Lavender/Indigo) -->
+        <div class="meal-block block-dinner">
+          <div class="meal-header">
+            <div class="meal-title">
+              <span>🌙</span>
+              <span>3. रात का भोजन (Dinner)</span>
+            </div>
+            <span class="meal-time-tag">रात का समय</span>
+          </div>
+
+          <div class="input-grid-6">
+            <!-- Dinner Sugar -->
+            <div class="field-group">
+              <label for="dinnerSugar">
+                <span>डिनर पूर्व शुगर (Pre)</span>
+                <span class="field-unit">mg/dL</span>
+              </label>
+              <input type="number" id="dinnerSugar" class="field-input" placeholder="उदा. 125" min="20" max="600" step="1">
+            </div>
+
+            <!-- Novorapid -->
+            <div class="field-group">
+              <label for="dinnerInsulin">
+                <span>नोवोरेपिड इंसुलिन</span>
+                <span class="field-unit">Units</span>
+              </label>
+              <input type="number" id="dinnerInsulin" class="field-input" placeholder="उदा. 5" min="0" max="60" step="0.5">
+            </div>
+
+            <!-- Dinner Description -->
+            <div class="field-group">
+              <label for="dinnerMeal">
+                <span>डिनर (Dinner)</span>
+                <span class="field-unit">आहार विवरण</span>
+              </label>
+              <input type="text" id="dinnerMeal" class="field-input" placeholder="उदा. 1.5 रोटी, पनीर भुर्जी, सलाद">
+            </div>
+
+            <!-- 2H Sugar -->
+            <div class="field-group">
+              <label for="dinner2hSugar">
+                <span>2H शुगर (2 घंटे बाद)</span>
+                <span class="field-unit">mg/dL</span>
+              </label>
+              <input type="number" id="dinner2hSugar" class="field-input" placeholder="उदा. 138" min="20" max="600" step="1">
+            </div>
+
+            <!-- Tresiba Insulin -->
+            <div class="field-group">
+              <label for="dinnerTresiba">
+                <span>ट्रेसीबा इंसुलिन (Tresiba)</span>
+                <span class="field-unit">बेसल Units</span>
+              </label>
+              <input type="number" id="dinnerTresiba" class="field-input" placeholder="उदा. 14" min="0" max="80" step="0.5">
+            </div>
+
+            <!-- Milk (Yes/No) -->
+            <div class="field-group">
+              <label for="dinnerMilk">
+                <span>दूध (Milk Yes/No)</span>
+                <span class="field-unit">रात को</span>
+              </label>
+              <select id="dinnerMilk" class="field-select">
+                <option value="नहीं (No)">नहीं (No)</option>
+                <option value="हाँ (Yes)">हाँ (Yes)</option>
+                <option value="1/2 कप (Half Cup)">1/2 कप (Half Cup)</option>
+                <option value="1 कप (1 Cup)">1 कप (1 Cup)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Optional Daily Remark -->
+        <div class="field-group" style="margin-bottom: 20px;">
+          <label for="dailyRemarks">
+            <span>विशेष टिप्पणी (Activity / Hypo / Exercise Notes - Optional):</span>
+          </label>
+          <input type="text" id="dailyRemarks" class="field-input" placeholder="उदा. 30 मिनट वॉक किया, कोई हाइपो नहीं, सामान्य दिन">
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-actions">
+          <button type="submit" class="btn-save-entry" id="btnSave">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            <span>डायरी में सुरक्षित सहेजें (SAVE PERMANENT ENTRY)</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- SHARE & EXPORT DIARY HUB -->
+    <div class="share-hub">
+      <div class="hub-header">
+        <h3>
+          <span>📤</span>
+          <span>डायरी शेयर एवं रिपोर्ट एक्सपोर्ट (Share / Export Diary)</span>
+        </h3>
+        <span style="font-size: 0.78rem; color: #64748B;">डॉक्टर या परिजनों के साथ आसानी से साझा करें</span>
+      </div>
+
+      <div class="share-buttons-grid">
+        <button type="button" class="btn-action btn-whatsapp" id="btnShareWhatsApp">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+          </svg>
+          <span>व्हाट्सएप पर भेजें (WhatsApp)</span>
+        </button>
+
+        <button type="button" class="btn-action btn-copy" id="btnCopySummary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span>कॉपी करें (Copy Summary)</span>
+        </button>
+
+        <button type="button" class="btn-action btn-download" id="btnDownloadCSV">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>CSV / Excel डाउनलोड</span>
+        </button>
+
+        <button type="button" class="btn-action btn-print" id="btnPrintReport">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          <span>प्रिंट / PDF सेव करें</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- RESPONSIVE HISTORY LOG TABLE -->
+    <div class="history-card">
+      <div class="history-top">
+        <h3>
+          <span>📊</span>
+          <span>डायरी इतिहास (Previous Log Records)</span>
+        </h3>
+        <div class="filter-group">
+          <input type="text" id="tableSearch" class="search-input" placeholder="🔍 तारीख या आहार खोजें...">
+          <button type="button" class="btn-today" id="btnExportSummaryModal">सारांश देखें (View Text)</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table id="historyTable">
+          <thead>
+            <!-- Super category headers -->
+            <tr class="super-header">
+              <th rowspan="2">तारीख (Date)</th>
+              <th colspan="5" class="col-bf">🌅 नाश्ता / खाली पेट (Breakfast & Fasting)</th>
+              <th colspan="5" class="col-lunch">☀️ दोपहर का भोजन (Lunch)</th>
+              <th colspan="6" class="col-dinner">🌙 रात का भोजन (Dinner)</th>
+              <th rowspan="2">टिप्पणी (Note)</th>
+            </tr>
+            <!-- Sub columns -->
+            <tr>
+              <!-- Breakfast -->
+              <th class="col-bf">Fasting Sugar</th>
+              <th class="col-bf">Novorapid</th>
+              <th class="col-bf">नाश्ता (Meal)</th>
+              <th class="col-bf">2H Sugar</th>
+              <th class="col-bf">11 AM</th>
+
+              <!-- Lunch -->
+              <th class="col-lunch">Pre Sugar</th>
+              <th class="col-lunch">Novorapid</th>
+              <th class="col-lunch">लंच (Meal)</th>
+              <th class="col-lunch">2H Sugar</th>
+              <th class="col-lunch">5 PM</th>
+
+              <!-- Dinner -->
+              <th class="col-dinner">Pre Sugar</th>
+              <th class="col-dinner">Novorapid</th>
+              <th class="col-dinner">डिनर (Meal)</th>
+              <th class="col-dinner">2H Sugar</th>
+              <th class="col-dinner">Tresiba</th>
+              <th class="col-dinner">दूध (Milk)</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Dynamic rows populated from localStorage -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="emptyMessage" class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <p><strong>अभी तक कोई प्रविष्टि सहेजी नहीं गई है।</strong></p>
+        <p style="font-size: 0.8rem; margin-top: 4px;">ऊपर दिए गए फॉर्म में आज का डेटा भरें और "डायरी में सुरक्षित सहेजें" पर क्लिक करें।</p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Toast Element -->
+  <div id="toast">संदेश यहाँ आएगा</div>
+
+  <!-- Summary Modal -->
+  <div class="modal-overlay" id="summaryModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4>📋 डॉक्टर शेयरिंग रिपोर्ट (Formatted Doctor Summary)</h4>
+        <button type="button" class="modal-close" id="btnCloseModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.8rem; color: #64748B; margin-bottom: 8px;">
+          यह टेक्स्ट डॉक्टर या व्हाट्सएप पर भेजने के लिए अनुकूलित है:
+        </p>
+        <pre id="summaryTextContent"></pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-today" id="btnModalCopy">टेक्स्ट कॉपी करें (Copy)</button>
+        <button type="button" class="btn-action btn-whatsapp" id="btnModalWhatsApp">WhatsApp पर भेजें</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC (IMMUTABLE STORAGE + SHARING) -->
+  <script>
+    (function() {
+      'use strict';
+
+      // Storage Key for LocalStorage
+      var STORAGE_KEY = 't1d_blood_sugar_diary_entries_v1';
+
+      // Elements
+      var form = document.getElementById('diabetesForm');
+      var logDateInput = document.getElementById('logDate');
+      var btnSetToday = document.getElementById('btnSetToday');
+      var tableBody = document.getElementById('tableBody');
+      var emptyMessage = document.getElementById('emptyMessage');
+      var tableSearch = document.getElementById('tableSearch');
+
+      var statTotalDays = document.getElementById('statTotalDays');
+      var statAvgFasting = document.getElementById('statAvgFasting');
+      var statAvgPostMeal = document.getElementById('statAvgPostMeal');
+      var statTotalInsulin = document.getElementById('statTotalInsulin');
+
+      var btnShareWhatsApp = document.getElementById('btnShareWhatsApp');
+      var btnCopySummary = document.getElementById('btnCopySummary');
+      var btnDownloadCSV = document.getElementById('btnDownloadCSV');
+      var btnPrintReport = document.getElementById('btnPrintReport');
+      var btnExportSummaryModal = document.getElementById('btnExportSummaryModal');
+
+      var summaryModal = document.getElementById('summaryModal');
+      var btnCloseModal = document.getElementById('btnCloseModal');
+      var summaryTextContent = document.getElementById('summaryTextContent');
+      var btnModalCopy = document.getElementById('btnModalCopy');
+      var btnModalWhatsApp = document.getElementById('btnModalWhatsApp');
+      var toast = document.getElementById('toast');
+
+      // Helper: Show Toast
+      function showToast(msg) {
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.className = 'show';
+        setTimeout(function() {
+          toast.className = toast.className.replace('show', '');
+        }, 3200);
+      }
+
+      // Helper: Format Date YYYY-MM-DD
+      function getTodayString() {
+        var now = new Date();
+        var y = now.getFullYear();
+        var m = String(now.getMonth() + 1).padStart(2, '0');
+        var d = String(now.getDate()).padStart(2, '0');
+        return y + '-' + m + '-' + d;
+      }
+
+      function formatDateDisplay(dateStr) {
+        if (!dateStr) return '';
+        var parts = dateStr.split('-');
+        if (parts.length === 3) {
+          return parts[2] + '/' + parts[1] + '/' + parts[0];
+        }
+        return dateStr;
+      }
+
+      // Set today's date on load
+      logDateInput.value = getTodayString();
+      btnSetToday.addEventListener('click', function() {
+        logDateInput.value = getTodayString();
+      });
+
+      // Load entries from localStorage
+      // STRICT IMMUTABILITY: We provide ONLY Read & Append operations.
+      // There are deliberately NO delete, edit, or clear functions exposed to the UI!
+      function loadEntries() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return [];
+          var list = JSON.parse(raw);
+          if (!Array.isArray(list)) return [];
+          return list;
+        } catch (e) {
+          console.error("Storage read error", e);
+          return [];
+        }
+      }
+
+      function saveEntryPermanently(entry) {
+        var entries = loadEntries();
+        // Append strictly without overwriting or deleting
+        entries.push(entry);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      }
+
+      // Sugar styling badge
+      function renderSugarBadge(value) {
+        if (value === null || value === undefined || value === '') return '<span style="color:#94A3B8;">-</span>';
+        var num = parseFloat(value);
+        if (isNaN(num)) return value;
+        var cls = 'sugar-normal';
+        if (num < 70) cls = 'sugar-low';
+        else if (num > 180) cls = 'sugar-high';
+        return '<span class="sugar-pill ' + cls + '">' + num + '</span>';
+      }
+
+      function renderVal(val) {
+        if (val === null || val === undefined || val === '') return '<span style="color:#94A3B8;">-</span>';
+        return String(val);
+      }
+
+      function renderInsulin(val) {
+        if (val === null || val === undefined || val === '') return '<span style="color:#94A3B8;">-</span>';
+        return '<span class="insulin-tag">' + val + ' U</span>';
+      }
+
+      // Render the History Table and update statistics
+      function renderUI() {
+        var entries = loadEntries();
+        var query = (tableSearch.value || '').trim().toLowerCase();
+
+        // Sort descending by date & created timestamp (latest on top)
+        var sorted = entries.slice().reverse();
+
+        if (query) {
+          sorted = sorted.filter(function(item) {
+            var fullSearchStr = (
+              item.date + ' ' + 
+              (item.breakfast.nashta || '') + ' ' +
+              (item.lunch.meal || '') + ' ' +
+              (item.dinner.meal || '') + ' ' +
+              (item.remarks || '')
+            ).toLowerCase();
+            return fullSearchStr.indexOf(query) !== -1;
+          });
+        }
+
+        // Empty state check
+        if (sorted.length === 0) {
+          tableBody.innerHTML = '';
+          emptyMessage.style.display = 'block';
+        } else {
+          emptyMessage.style.display = 'none';
+          var html = '';
+          for (var i = 0; i < sorted.length; i++) {
+            var item = sorted[i];
+            var bf = item.breakfast || {};
+            var ln = item.lunch || {};
+            var dn = item.dinner || {};
+
+            html += '<tr>' +
+              '<td class="td-center" style="font-weight:700; white-space:nowrap;">' + formatDateDisplay(item.date) + '</td>' +
+              
+              // Breakfast
+              '<td class="td-center">' + renderSugarBadge(bf.sugar) + '</td>' +
+              '<td class="td-center">' + renderInsulin(bf.insulin) + '</td>' +
+              '<td>' + renderVal(bf.nashta) + '</td>' +
+              '<td class="td-center">' + renderSugarBadge(bf.sugar2h) + '</td>' +
+              '<td>' + renderVal(bf.elevenAm) + '</td>' +
+
+              // Lunch
+              '<td class="td-center">' + renderSugarBadge(ln.sugar) + '</td>' +
+              '<td class="td-center">' + renderInsulin(ln.insulin) + '</td>' +
+              '<td>' + renderVal(ln.meal) + '</td>' +
+              '<td class="td-center">' + renderSugarBadge(ln.sugar2h) + '</td>' +
+              '<td>' + renderVal(ln.fivePm) + '</td>' +
+
+              // Dinner
+              '<td class="td-center">' + renderSugarBadge(dn.sugar) + '</td>' +
+              '<td class="td-center">' + renderInsulin(dn.insulin) + '</td>' +
+              '<td>' + renderVal(dn.meal) + '</td>' +
+              '<td class="td-center">' + renderSugarBadge(dn.sugar2h) + '</td>' +
+              '<td class="td-center">' + renderInsulin(dn.tresiba) + '</td>' +
+              '<td class="td-center">' + renderVal(dn.milk) + '</td>' +
+
+              // Remarks
+              '<td>' + renderVal(item.remarks) + '</td>' +
+            '</tr>';
+          }
+          tableBody.innerHTML = html;
+        }
+
+        // Calculate Stats
+        statTotalDays.textContent = entries.length;
+
+        var fastingSum = 0;
+        var fastingCount = 0;
+        var postMealSum = 0;
+        var postMealCount = 0;
+        var lastTotalInsulin = 0;
+
+        for (var k = 0; k < entries.length; k++) {
+          var e = entries[k];
+          if (e.breakfast && e.breakfast.sugar) {
+            var fs = parseFloat(e.breakfast.sugar);
+            if (!isNaN(fs)) {
+              fastingSum += fs;
+              fastingCount++;
+            }
+          }
+          var p2hArr = [
+            e.breakfast ? parseFloat(e.breakfast.sugar2h) : NaN,
+            e.lunch ? parseFloat(e.lunch.sugar2h) : NaN,
+            e.dinner ? parseFloat(e.dinner.sugar2h) : NaN
+          ];
+          for (var p = 0; p < p2hArr.length; p++) {
+            if (!isNaN(p2hArr[p])) {
+              postMealSum += p2hArr[p];
+              postMealCount++;
+            }
+          }
+        }
+
+        statAvgFasting.textContent = fastingCount > 0 ? Math.round(fastingSum / fastingCount) : '-';
+        statAvgPostMeal.textContent = postMealCount > 0 ? Math.round(postMealSum / postMealCount) : '-';
+
+        if (entries.length > 0) {
+          var last = entries[entries.length - 1];
+          var totalU = 0;
+          if (last.breakfast && last.breakfast.insulin) totalU += (parseFloat(last.breakfast.insulin) || 0);
+          if (last.lunch && last.lunch.insulin) totalU += (parseFloat(last.lunch.insulin) || 0);
+          if (last.dinner && last.dinner.insulin) totalU += (parseFloat(last.dinner.insulin) || 0);
+          if (last.dinner && last.dinner.tresiba) totalU += (parseFloat(last.dinner.tresiba) || 0);
+          statTotalInsulin.textContent = totalU > 0 ? totalU + ' U' : '-';
+        } else {
+          statTotalInsulin.textContent = '-';
+        }
+      }
+
+      // Handle Form Submit: SAVE PERMANENT ENTRY
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var dateVal = logDateInput.value;
+        if (!dateVal) {
+          alert('कृपया तारीख चुनें (Please select date)');
+          return;
+        }
+
+        var entry = {
+          id: 't1d_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+          createdAt: new Date().toISOString(),
+          date: dateVal,
+          breakfast: {
+            sugar: document.getElementById('bfSugar').value.trim(),
+            insulin: document.getElementById('bfInsulin').value.trim(),
+            nashta: document.getElementById('bfNashta').value.trim(),
+            sugar2h: document.getElementById('bf2hSugar').value.trim(),
+            elevenAm: document.getElementById('bf11Am').value.trim()
+          },
+          lunch: {
+            sugar: document.getElementById('lunchSugar').value.trim(),
+            insulin: document.getElementById('lunchInsulin').value.trim(),
+            meal: document.getElementById('lunchMeal').value.trim(),
+            sugar2h: document.getElementById('lunch2hSugar').value.trim(),
+            fivePm: document.getElementById('lunch5pm').value.trim()
+          },
+          dinner: {
+            sugar: document.getElementById('dinnerSugar').value.trim(),
+            insulin: document.getElementById('dinnerInsulin').value.trim(),
+            meal: document.getElementById('dinnerMeal').value.trim(),
+            sugar2h: document.getElementById('dinner2hSugar').value.trim(),
+            tresiba: document.getElementById('dinnerTresiba').value.trim(),
+            milk: document.getElementById('dinnerMilk').value
+          },
+          remarks: document.getElementById('dailyRemarks').value.trim()
+        };
+
+        saveEntryPermanently(entry);
+        showToast('✅ प्रविष्टि सुरक्षित सहेजी गई! (Entry Saved Permanently)');
+
+        // Clear only meal inputs, keeping date
+        document.getElementById('bfSugar').value = '';
+        document.getElementById('bfInsulin').value = '';
+        document.getElementById('bfNashta').value = '';
+        document.getElementById('bf2hSugar').value = '';
+        document.getElementById('bf11Am').value = '';
+
+        document.getElementById('lunchSugar').value = '';
+        document.getElementById('lunchInsulin').value = '';
+        document.getElementById('lunchMeal').value = '';
+        document.getElementById('lunch2hSugar').value = '';
+        document.getElementById('lunch5pm').value = '';
+
+        document.getElementById('dinnerSugar').value = '';
+        document.getElementById('dinnerInsulin').value = '';
+        document.getElementById('dinnerMeal').value = '';
+        document.getElementById('dinner2hSugar').value = '';
+        document.getElementById('dinnerTresiba').value = '';
+        document.getElementById('dinnerMilk').selectedIndex = 0;
+        document.getElementById('dailyRemarks').value = '';
+
+        renderUI();
+
+        // Scroll to table smoothly to show newly saved entry
+        var tableSection = document.querySelector('.history-card');
+        if (tableSection) {
+          tableSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      });
+
+      // Filter search listener
+      tableSearch.addEventListener('input', renderUI);
+
+      // Generate Clean Text Summary for Doctor/Sharing
+      function generateTextSummary(entriesToFormat) {
+        var list = entriesToFormat || loadEntries();
+        if (!list || list.length === 0) {
+          return "दैनिक ब्लड शुगर एवं आहार डायरी (Type 1 Diabetes Log)\nकोई रिकॉर्ड उपलब्ध नहीं है।";
+        }
+
+        var lines = [];
+        lines.push("📋 दैनिक ब्लड शुगर एवं आहार डायरी (Type 1 Diabetes Daily Log)");
+        lines.push("🔒 सुरक्षित अपरिवर्तनीय चिकित्सा रिकॉर्ड (Tamper-Proof Log)");
+        lines.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
+        // Format latest up to last 7 days or single day
+        var items = list.slice(-5); // latest 5 entries
+        for (var i = 0; i < items.length; i++) {
+          var item = items[i];
+          var bf = item.breakfast || {};
+          var ln = item.lunch || {};
+          var dn = item.dinner || {};
+
+          lines.push("\n📅 तारीख: " + formatDateDisplay(item.date));
+          
+          lines.push("🌅 नाश्ता / Fasting:");
+          lines.push("  • फास्टिंग शुगर: " + (bf.sugar ? bf.sugar + " mg/dL" : "-"));
+          lines.push("  • नोवोरेपिड इंसुलिन: " + (bf.insulin ? bf.insulin + " U" : "-"));
+          lines.push("  • नाश्ता: " + (bf.nashta || "-"));
+          lines.push("  • 2 घंटे बाद शुगर: " + (bf.sugar2h ? bf.sugar2h + " mg/dL" : "-"));
+          lines.push("  • 11 AM नोट: " + (bf.elevenAm || "-"));
+
+          lines.push("☀️ दोपहर का भोजन (Lunch):");
+          lines.push("  • लंच पूर्व शुगर: " + (ln.sugar ? ln.sugar + " mg/dL" : "-"));
+          lines.push("  • नोवोरेपिड इंसुलिन: " + (ln.insulin ? ln.insulin + " U" : "-"));
+          lines.push("  • लंच: " + (ln.meal || "-"));
+          lines.push("  • 2 घंटे बाद शुगर: " + (ln.sugar2h ? ln.sugar2h + " mg/dL" : "-"));
+          lines.push("  • 5 PM नोट: " + (ln.fivePm || "-"));
+
+          lines.push("🌙 रात का भोजन (Dinner):");
+          lines.push("  • डिनर पूर्व शुगर: " + (dn.sugar ? dn.sugar + " mg/dL" : "-"));
+          lines.push("  • नोवोरेपिड इंसुलिन: " + (dn.insulin ? dn.insulin + " U" : "-"));
+          lines.push("  • डिनर: " + (dn.meal || "-"));
+          lines.push("  • 2 घंटे बाद शुगर: " + (dn.sugar2h ? dn.sugar2h + " mg/dL" : "-"));
+          lines.push("  • ट्रेसीबा (बेसल): " + (dn.tresiba ? dn.tresiba + " U" : "-"));
+          lines.push("  • दूध: " + (dn.milk || "-"));
+
+          if (item.remarks) {
+            lines.push("📝 टिप्पणी/एक्टिविटी: " + item.remarks);
+          }
+          lines.push("────────────────────────────");
+        }
+
+        lines.push("\n*यह रिकॉर्ड टाइप 1 डायबिटीज प्रबंधन हेतु स्थानीय रूप से सुरक्षित रखा गया है।");
+        return lines.join("\n");
+      }
+
+      // Native Bridge or Web Share / Clipboard
+      function shareViaWhatsApp() {
+        var text = generateTextSummary();
+        if (window.AndroidBridge && window.AndroidBridge.shareOnWhatsApp) {
+          window.AndroidBridge.shareOnWhatsApp(text);
+          return;
+        }
+        var encoded = encodeURIComponent(text);
+        var url = "https://api.whatsapp.com/send?text=" + encoded;
+        window.open(url, '_blank');
+      }
+
+      function shareGeneral() {
+        var text = generateTextSummary();
+        if (window.AndroidBridge && window.AndroidBridge.shareText) {
+          window.AndroidBridge.shareText(text);
+          return;
+        }
+        if (navigator.share) {
+          navigator.share({
+            title: 'दैनिक ब्लड शुगर एवं आहार डायरी',
+            text: text
+          }).catch(function(err) {
+            console.log("Share skipped", err);
+          });
+        } else {
+          copyToClipboard(text);
+        }
+      }
+
+      function copyToClipboard(text) {
+        if (window.AndroidBridge && window.AndroidBridge.copyToClipboard) {
+          window.AndroidBridge.copyToClipboard(text);
+          showToast('📋 क्लिपबोर्ड पर कॉपी किया गया!');
+          return;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function() {
+            showToast('📋 डॉक्टर सारांश क्लिपबोर्ड पर कॉपी हुआ!');
+          }).catch(function() {
+            fallbackCopy(text);
+          });
+        } else {
+          fallbackCopy(text);
+        }
+      }
+
+      function fallbackCopy(text) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          showToast('📋 क्लिपबोर्ड पर कॉपी हुआ!');
+        } catch (e) {
+          showToast('कॉपी करने में असमर्थ, कृपया मैन्युअल चयन करें');
+        }
+        document.body.removeChild(ta);
+      }
+
+      // Download CSV
+      function downloadCSV() {
+        var entries = loadEntries();
+        if (entries.length === 0) {
+          showToast('कोई डेटा उपलब्ध नहीं है!');
+          return;
+        }
+
+        var headers = [
+          "Date",
+          "Fasting_Sugar_mgdl", "Breakfast_Novorapid_Units", "Nashta_Meal", "Breakfast_2H_Sugar", "MidMorning_11Am",
+          "Pre_Lunch_Sugar", "Lunch_Novorapid_Units", "Lunch_Meal", "Lunch_2H_Sugar", "Evening_5Pm_Note",
+          "Pre_Dinner_Sugar", "Dinner_Novorapid_Units", "Dinner_Meal", "Dinner_2H_Sugar", "Tresiba_Units", "Milk",
+          "Remarks"
+        ];
+
+        var rows = [headers.join(",")];
+
+        for (var i = 0; i < entries.length; i++) {
+          var item = entries[i];
+          var bf = item.breakfast || {};
+          var ln = item.lunch || {};
+          var dn = item.dinner || {};
+
+          var row = [
+            '"' + (item.date || '') + '"',
+            '"' + (bf.sugar || '') + '"',
+            '"' + (bf.insulin || '') + '"',
+            '"' + (bf.nashta ? bf.nashta.replace(/"/g, '""') : '') + '"',
+            '"' + (bf.sugar2h || '') + '"',
+            '"' + (bf.elevenAm ? bf.elevenAm.replace(/"/g, '""') : '') + '"',
+            '"' + (ln.sugar || '') + '"',
+            '"' + (ln.insulin || '') + '"',
+            '"' + (ln.meal ? ln.meal.replace(/"/g, '""') : '') + '"',
+            '"' + (ln.sugar2h || '') + '"',
+            '"' + (ln.fivePm ? ln.fivePm.replace(/"/g, '""') : '') + '"',
+            '"' + (dn.sugar || '') + '"',
+            '"' + (dn.insulin || '') + '"',
+            '"' + (dn.meal ? dn.meal.replace(/"/g, '""') : '') + '"',
+            '"' + (dn.sugar2h || '') + '"',
+            '"' + (dn.tresiba || '') + '"',
+            '"' + (dn.milk || '') + '"',
+            '"' + (item.remarks ? item.remarks.replace(/"/g, '""') : '') + '"'
+          ];
+          rows.push(row.join(","));
+        }
+
+        var csvContent = "\uFEFF" + rows.join("\r\n"); // UTF-8 BOM for Hindi text in Excel
+        var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        var link = document.createElement("a");
+        var url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "Type1_Diabetes_Sugar_Diary_" + getTodayString() + ".csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('📁 CSV फाइल डाउनलोड हो गई!');
+      }
+
+      // Event Listeners for Sharing Hub
+      btnShareWhatsApp.addEventListener('click', shareViaWhatsApp);
+      btnCopySummary.addEventListener('click', function() {
+        var text = generateTextSummary();
+        copyToClipboard(text);
+      });
+      btnDownloadCSV.addEventListener('click', downloadCSV);
+      btnPrintReport.addEventListener('click', function() {
+        if (window.AndroidBridge && window.AndroidBridge.printPage) {
+          window.AndroidBridge.printPage();
+        } else {
+          window.print();
+        }
+      });
+
+      // Modal handlers
+      btnExportSummaryModal.addEventListener('click', function() {
+        summaryTextContent.textContent = generateTextSummary();
+        summaryModal.classList.add('active');
+      });
+
+      btnCloseModal.addEventListener('click', function() {
+        summaryModal.classList.remove('active');
+      });
+
+      summaryModal.addEventListener('click', function(e) {
+        if (e.target === summaryModal) {
+          summaryModal.classList.remove('active');
+        }
+      });
+
+      btnModalCopy.addEventListener('click', function() {
+        copyToClipboard(summaryTextContent.textContent);
+      });
+
+      btnModalWhatsApp.addEventListener('click', function() {
+        shareViaWhatsApp();
+      });
+
+      // Sample Data on First Run (Only if completely empty, so doctor/user can immediately see the layout)
+      var current = loadEntries();
+      if (current.length === 0) {
+        var sampleYesterday = new Date(Date.now() - 86400000);
+        var yDate = sampleYesterday.getFullYear() + '-' + 
+                    String(sampleYesterday.getMonth() + 1).padStart(2, '0') + '-' + 
+                    String(sampleYesterday.getDate()).padStart(2, '0');
+
+        var sampleEntry = {
+          id: 't1d_sample_01',
+          createdAt: new Date(Date.now() - 86400000).toISOString(),
+          date: yDate,
+          breakfast: {
+            sugar: "98",
+            insulin: "4",
+            nashta: "2 बेसन चीला, फीकी चाय",
+            sugar2h: "142",
+            elevenAm: "10 बादाम, खीरा"
+          },
+          lunch: {
+            sugar: "112",
+            insulin: "6",
+            nashta: "",
+            meal: "2 रोटी, दाल, तोरी, खीरा सलाद",
+            sugar2h: "148",
+            fivePm: "ग्रीन टी, भुना मखाना"
+          },
+          dinner: {
+            sugar: "124",
+            insulin: "5",
+            meal: "1.5 रोटी, पनीर भुर्जी, हरी सब्जी",
+            sugar2h: "136",
+            tresiba: "14",
+            milk: "हाँ (Yes)"
+          },
+          remarks: "शाम को 35 मिनट वॉक किया। कोई हाइपो नहीं।"
+        };
+        saveEntryPermanently(sampleEntry);
+      }
+
+      // Initial Render
+      renderUI();
+
+    })();
+  </script>
+</body>
+</html>
